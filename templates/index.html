@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Wiki Speedrun</title>
+
+        <link rel="stylesheet" href="/static/style.css">
+    </head>
+
+    <body>
+
+
+        <div id="notification"></div>
+
+        <div id="game-area" class="loading-dialog">
+
+            <div id="loading-dialog" class="page">
+                <h1 id="loading-text">Connecting to game server...</h1>
+            </div>
+
+            <div id="room-dialog" class="page">
+
+                <div id="header">
+                    <img src="/static/logo.svg" alt="logo">
+                    <h1>Wiki Speedrun</h1>
+                </div>
+
+                <div class="labeled-input">
+                    <h2>Room ID: </h2>
+                    <input type="text" id="room-id" placeholder="Room ID">
+                </div>
+                <div class="labeled-input">
+                    <h2>Room Code: </h2>
+                    <input type="text" id="room-code" placeholder="(optional)">
+                </div>
+                
+                <button onclick="createRoom()">Create Room</button>
+                <button onclick="joinRoom()">Join Room</button>
+
+                <div id="footer">
+                    This project is maintained by <a href="https://boyne.dev">Boyne Gregg</a> and is powered by the Wikimedia API. We are not affiliated with or endorsed by the Wikimedia Foundation.
+                </div>
+            </div>
+
+            <div id="room-settings" class="page has-subpages">
+                <div class="subpage">
+                    <div class="subpage-content">
+                        <h2>Connected to room: <div id="room-name">?</div></h2>
+
+                        <div class="labeled-input">
+                            <h2>Code: </h2>
+                            <input type="text" id="room-code-setting" placeholder="[public room]">
+                        </div>
+
+                        <input type="text" id="start-page-input" placeholder="Start Page" onchange="searchStartPage()">
+
+                        <input type="text" id="end-page-input" placeholder="End Page" onchange="searchEndPage()">
+
+                        <button onclick="startGame()">Start!</button>
+                        <button onclick="window.location.reload()">Exit</button>
+                    </div>
+                </div>
+                <div class="subpage">
+                    <div class="subpage-content">
+                        <h1>Players</h1>
+
+                        <div id="room-settings-player-list">
+
+                        </div>
+                    </div>
+                    
+                    <div class="subpage-content">
+                        
+                        <div id="room-settings-chat">
+                            <h1>Chat</h1>
+                            <div id="chat-message-area">
+
+                            </div>
+                            <div id="chat-bar">
+                                <input id="chat-message" placeholder="Message">
+                                <button onclick="sendChatMessage()">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="wiki-window" class="page">
+                <div id="window-controls">
+                    <div id="url-bar">
+                        
+                    </div>
+                    <div class="control-buttons">
+                        <button id="back" onclick="navigateBack()">←</button>
+                        <button id="forward" onclick="navigateForward()">→</button>
+                    </div>
+                </div>
+                <iframe id="page-render"></iframe>
+            </div>
+
+            <div id="victory-dialog" class="page">
+                <h2>We have a winner!</h2>
+                <h1 id="winner-name"></h1>
+                <div id="victory-stats">
+                    <div id="page-path"></div>
+                </div>
+                <button onclick="returnToRoomSettings()">Finish</button>
+            </div>
+
+            <div id="connect-failed" class="page">
+                <h1>Couldn't connect to the server</h1>
+                <button onclick="window.location.reload()">Try again?</button>
+            </div>
+
+        </div>
+        
+        <script type="text/javascript" src="/static/socket.io.js"></script>
+        <script type="text/javascript" src="/static/wikiapi.js"></script>
+        <script type="text/javascript" src="/static/wikispeedrun.js"></script>
+    </body>
+</html>

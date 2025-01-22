@@ -1,0 +1,7 @@
+body {
+
+    --box-background: rgba(255, 255, 255, 0.2);
+    font-family: sans-serif;
+    background-color: white;
+    color: black;
+}

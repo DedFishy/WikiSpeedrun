@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Wiki Speedrun</title>
+
+        <link rel="stylesheet" href="/static/style.css">
+    </head>
+
+    <body>
+
+        <h1>Wiki Speedrun</h1>
+
+        <div id="notification"></div>
+
+        <div id="game-area" class="wiki-window">
+
+            <div id="wiki-window" class="page">
+                <div id="page-title">Wikipedia</div>
+                <iframe id="page-render"></iframe>
+            </div>
+        </div>
+        
+        <script type="text/javascript">
+            const url = "https://en.wikipedia.org/wiki/"
+            var doc = document.getElementById("page-render").contentWindow.document;
+            doc.write(removeEscapeCodes(`{{ html|safe }}`));
+
+
+            let link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = "/static/wiki-inject.css";
+            doc.head.appendChild(link);
+
+            function removeEscapeCodes(html) {
+                return html
+                    .replaceAll("&#183;", "·")
+            }
+
+            function linkPostProcess(targetElement, targetFunction) {
+                var links = targetElement.getElementsByTagName("a");
+                for (let element of links) {
+                    if (element.href.includes(url)) {
+                        element.targetPage = element.href.replace(url, "");
+                        element.onclick = targetFunction;
+                        element.href = "#";
+                    } else {
+                        element.href = "#";
+                        element.onclick = (event) => {
+                            event.preventDefault();
+                        }
+                    }
+                }
+            }
+            linkPostProcess(doc.body, (event) => {
+                event.preventDefault();
+                console.log(event.target.targetPage);
+            })
+        </script>
+        
+    </body>
+</html>

@@ -1,0 +1,283 @@
+/* Configuration */
+@font-face {
+    font-family: Domine;
+    src: url("/static/domine.ttf");
+}
+
+*:root {
+    --background: #FFFFFF;
+    --background-alt: #e7e7e7;
+    --accent: #3366cc;
+    --deep-accent: #00053f;
+    --foreground: #000000;
+
+    --subpage-margin: 10px;
+}
+
+/* Elements */
+body {
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--background);
+    color: var(--foreground);
+    margin: 0;
+    padding: 0;
+    font-family: Domine, 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+button, input {
+    border: 2px solid var(--foreground);
+    box-shadow: 5px 5px 0 var(--foreground);
+    background-color: var(--background);
+    box-sizing: border-box;
+    margin: 15px 0 15px 0;
+    color: var(--foreground);
+    outline: none;
+    transition: 0.2s;
+    font-family: Domine, sans-serif;
+    font-size: 2em;
+    width: 80%;
+}
+button:active, button:focus, input:focus {
+    border: 2px solid var(--accent);
+    box-shadow: 5px 5px 0 var(--accent);
+}
+button {
+    cursor: pointer;
+}
+input {
+    cursor: text;
+}
+button:active, input:focus {
+    box-shadow: 0 0 0 var(--deep-accent);
+    transform: translate(5px, 5px);
+}
+a {
+    color: blue;
+}
+h3 {
+    margin: 0;
+}
+
+/* Notification */
+#notification {
+    display: flex;
+    position: absolute;
+    height: 0;
+    opacity: 0;
+    transition: 0.2s;
+    width: 80vw;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: var(--background);
+    border: 2px solid var(--foreground);
+    box-shadow: 5px 5px 0 var(--foreground);
+    top: 10px;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+
+}
+#notification.showing {
+    height: 50px;
+    opacity: 1;
+}
+
+/* Game Area */
+#game-area {
+    width: 100vw;
+    flex-grow: 1;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+#game-area .page {
+    display: flex;
+    width: 0;
+    height: 0;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    box-sizing: border-box;
+    transition: 0.2s;
+    overflow: hidden;
+}
+#game-area.loading-dialog #loading-dialog, 
+#game-area.room-dialog #room-dialog,
+#game-area.room-settings #room-settings,
+#game-area.wiki-window #wiki-window,
+#game-area.victory-dialog #victory-dialog,
+#game-area.connect-failed #connect-failed {
+    opacity: 1;
+    pointer-events: all;
+    height: 100%;
+    width: 100%;
+}
+/* Global Controls */
+.labeled-input {
+    display: flex;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.labeled-input h2 {
+    margin-right: 1em;
+    white-space: nowrap;
+}
+.labeled-input input {
+    flex-grow: 1;
+    
+}
+
+#game-area .has-subpages {
+    display: flex;
+    flex-direction: row;
+}
+.subpage {
+    flex-grow: 1;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+}
+.subpage .subpage-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.player-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+.player-list-item-name {
+    padding: 5px;
+    margin: 4px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    flex-grow: 1;
+    border: 2px solid black;
+}
+.player-list-item-name:focus {
+    box-shadow: 0 2px var(--foreground);
+}
+.player-you-indicator {
+    height: 100%;
+    font-variant: all-small-caps;
+    padding: 5px;
+    margin-right: 5px;
+    border-radius: 5px;
+    white-space: nowrap;
+}
+input.player-list-item-name {
+    font-size: 1em;
+}
+input.invalid-input {
+    border: 2px solid red;
+}
+/* Room Dialog */
+
+#room-dialog input, #room-dialog button {
+    display: block;
+    width: 80%;
+}
+#header {
+    display: flex;
+    flex-direction: column;
+    font-size: 5vh;
+}
+#header img {
+    height: 30dvh;
+}
+#header h1 {
+    font-size: 1em;
+    margin: 0;
+}
+#footer {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+/* Room Settings */
+#room-name {
+    display: inline;
+}
+#room-settings-player-list, #room-settings-chat {
+    flex-grow: 1;
+    width: 100%;
+}
+/* Chat */
+#room-settings-chat {
+    display: flex;
+    flex-direction: column;
+}
+#chat-message-area {
+    flex-grow: 1;
+}
+#chat-bar {
+    display: flex;
+}
+#chat-bar button {
+    width: fit-content;
+}
+#chat-bar * {
+    margin: 10px;
+    box-sizing: border-box;
+}
+/* Wiki Window */
+#page-render {
+    width: 100%;
+    flex-grow: 1;
+    border: 0;
+    color: white;
+    overflow-x: hidden;
+}
+
+#window-controls {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+#url-bar {
+    flex-grow: 1;
+    font-size: 2em;
+}
+.control-buttons {
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+}
+.control-buttons button {
+    box-shadow: none;
+    height: 100%;
+    margin: 0;
+    transform: none;
+}
+
+/* End Screen */
+#page-path {
+    display: flex;
+}
+.path-chip {
+    background-color: var(--background-alt);
+    margin: 5px;
+    padding: 5px;
+    border-radius: 5px;
+}
