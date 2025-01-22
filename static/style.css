@@ -229,6 +229,8 @@ input.invalid-input {
 }
 #chat-message-area {
     flex-grow: 1;
+    overflow: scroll;
+    max-height: 50dvh;
 }
 #chat-bar {
     display: flex;

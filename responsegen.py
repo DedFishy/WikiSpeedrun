@@ -110,6 +110,14 @@ class ResponseGenerator:
         response["start_title"] = start_title
         response["status"] = status
         return response
+    
+    def chat_message(self, sender: str, message: str, status: str = "success"):
+        response = {}
+        response["sender"] = sender
+        response["message"] = message
+        response["status"] = status
+
+        return response
 
     def error(self, error: gamemanager.GameManagerError, status: str = "failure"):
         response = {}

@@ -18,7 +18,6 @@ class EventType(Enum):
     WAITING_ROOM = "waiting_room"
 
     SEND_CHAT_MESSAGE = "send_chat_message"
-    
 
     ROOM_UPDATE = "room_update"
 

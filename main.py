@@ -145,9 +145,12 @@ def start_game():
         response_generator.emit_error_response(E.START_GAME_RESPONSE, e)
 
 @socketio.on(e(E.SEND_CHAT_MESSAGE))
-def send_chat_message():
+def send_chat_message(data):
     try:
-        
+        player = game_manager.get_player(request.sid)
+        response_generator.emit(E.SEND_CHAT_MESSAGE, response_generator.chat_message, player.room.name, sender=player.name, message=data["text"])
+    except GameManagerError as e:
+        response_generator.emit_error_response(E.SEND_CHAT_MESSAGE, e)
 
 @socketio.on(e(E.GAME_MODE_EVENT))
 def game_mode_event(data):

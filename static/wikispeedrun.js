@@ -9,6 +9,7 @@ const roomCodeSettings = document.getElementById("room-code-setting");
 const roomSettingsPlayerList = document.getElementById("room-settings-player-list");
 
 const chatMessageInput = document.getElementById("chat-message");
+const chatMessageDisplay = document.getElementById("chat-message-area");
 
 const startPageSearch = document.getElementById("start-page-input");
 const endPageSearch = document.getElementById("end-page-input");
@@ -45,6 +46,9 @@ const disallowedModifiers = [
     "Gadget",
     "Gadget definition"
 ]
+
+/* Element Callbacks */
+
 
 /* Misc Utils */
 function linkPostProcess(targetElement, targetFunction) {
@@ -252,6 +256,29 @@ function createPlayerListElement(player, isPlayer, isOwner) {
 }
 
 /* Misc Callbacks */
+function addChatMessage(sender, text) {
+
+    let isScrolledToBottom = chatMessageDisplay.scrollTop == (chatMessageDisplay.scrollHeight - chatMessageDisplay.offsetHeight);
+
+    let messageElement = document.createElement("div");
+    messageElement.classList.add("message-container");
+
+    let senderEl = document.createElement("div");
+    senderEl.classList.add("message-sender");
+    senderEl.innerText = sender;
+
+    let textEl = document.createElement("div");
+    textEl.classList.add("message-text");
+    textEl.innerText = text;
+
+    messageElement.appendChild(senderEl);
+    messageElement.appendChild(textEl);
+
+    chatMessageDisplay.appendChild(messageElement);
+
+    if (isScrolledToBottom)
+        messageElement.scrollIntoView();
+}
 function sendChatMessage() {
     let message = chatMessageInput.value;
     socket.emit("send_chat_message", {"text": message});
@@ -428,6 +455,10 @@ listenForErrorableEvent("search_pages", absorbEvent, (data) => {
 listenForErrorableEvent("start_game_response", absorbEvent, (data) => {
     setScene("roomSettings");
 });
+
+listenForErrorableEvent("send_chat_message", function(data) {
+    addChatMessage(data["sender"], data["message"])
+}, showRequestError)
 
 /* Starting methods */
 setLoadTimeout();
