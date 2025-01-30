@@ -70,6 +70,9 @@ class ResponseGenerator:
         response["start_article"] = room.settings.get_member_or("start_article").serialize()
         response["end_article"] = room.settings.get_member_or("end_article").serialize()
         response["waiting_for_players"] = room.evaluate_waiting_for_reset()
+
+        if not response["waiting_for_players"]:
+            room.state = gamemanager.RoomState.IN_ROOM_SETTINGS
         
         if player:
             response["username"] = player.name
@@ -130,4 +133,8 @@ class ResponseGenerator:
         for arg in args.keys():
             response[arg] = args[arg]
         return response
+    
+    def eval_correct_state(self, room: gamemanager.Room, state: gamemanager.RoomState):
+        if room.state != state:
+            raise gamemanager.GameManagerError("Evaluating game state")
     

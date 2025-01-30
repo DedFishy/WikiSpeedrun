@@ -48,7 +48,12 @@ const disallowedModifiers = [
 ]
 
 /* Element Callbacks */
-
+chatMessageInput.addEventListener("keypress", function(event) {
+    if (event.key == "Enter") {
+        event.preventDefault();
+        sendChatMessage();
+    }
+});
 
 /* Misc Utils */
 function linkPostProcess(targetElement, targetFunction) {
@@ -281,8 +286,14 @@ function addChatMessage(sender, text) {
 }
 function sendChatMessage() {
     let message = chatMessageInput.value;
-    socket.emit("send_chat_message", {"text": message});
-    chatMessageInput.value = "";
+    if (message.length >= 1) {
+        socket.emit("send_chat_message", {"text": message});
+        chatMessageInput.value = "";
+    }
+}
+
+function clearChatMessages() {
+    chatMessageDisplay.innerHTML = "";
 }
 function linkNavigationEvent(event) {
     event.preventDefault();
@@ -350,6 +361,7 @@ function connectToRoom(data) {
         setScene("roomSettings");
         startPageSearch.value = "";
         endPageSearch.value = "";
+        clearChatMessages();
         updateRoomSettings(data);
         
     } else {
@@ -441,6 +453,10 @@ socket.on("change_user_scene", function(data) {
 })
 socket.on("change_all_scenes", function(data) {
     setScene(data["scene"]);
+})
+
+socket.on("force_disconnect", function(data) {
+document.body.innerHTML = "You have been banned from using this service. Have a nice day!";
 })
 
 listenForErrorableEvent("change_username", function(data) {

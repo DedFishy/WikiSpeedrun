@@ -25,6 +25,7 @@ class RoomDoesNotExistException(GameManagerError): client_error = "That room doe
 class RoomAuthenticationErrorException(GameManagerError): client_error = "The code is incorrect"
 class PlayerNotInRoomException(GameManagerError): client_error = "Player not found in this room"
 class NotRoomOwnerException(GameManagerError): client_error = "Not the owner of the room"
+class RoomNotInWaitingRoomException(GameManagerError): client_error = "That room is already in a game"
 
 class PageNotFoundException(GameManagerError): client_error = "Couldn't find that page"
 
@@ -91,11 +92,14 @@ class GameModeResponse(Enum):
                 player.current_page_index = len(player.page_path) - 1
                 
             if success:
+                response_gen.eval_correct_state(room, RoomState.PLAYING)
                 return response_gen.emit(GameModeResponse.NAV_PAGE, response_gen.nav_page, player.sid, page_id = data["page_id"])
             else:
                 return response_gen.emit_error_response(GameModeResponse.NAV_PAGE, PageNotFoundException)
         elif self == GameModeResponse.VICTORY_RACE:
+            response_gen.eval_correct_state(room, RoomState.PLAYING)
             room.unready_all_players()
+            room.state = RoomState.WAITING
             return response_gen.emit(GameModeResponse.VICTORY_RACE, response_gen.change_scene, player.room.name, room=player.room, scene="victory", winner_name=player.name, page_path=player.get_title_page_path())
         elif self == GameModeResponse.NONE:
             return
@@ -104,6 +108,8 @@ class GameModeResponse(Enum):
             for other_player in player.room.players:
                 other_player.page_path = [start_article.serialize()]
                 other_player.current_page_index = 0
+            response_gen.eval_correct_state(room, RoomState.IN_ROOM_SETTINGS)
+            room.state = RoomState.PLAYING
             return response_gen.emit(GameModeResponse.START, response_gen.start, player.room.name, scene="wikiWindow", start_title = room.settings.start_article.page_id)
         else:
             print(f"Unhandled GameModeResponse: {self.value}")
@@ -169,6 +175,11 @@ class RoomSettings:
         return True
 
 # Room class
+class RoomState(Enum):
+    IN_ROOM_SETTINGS = 0
+    PLAYING = 1
+    WAITING = 2
+
 class Room:
     def __init__(self, name: str, code: str, api: WikipediaAPI):
         self.name = name # Room name
@@ -178,6 +189,7 @@ class Room:
         self.owner = None # Room creator
         self.settings = RoomSettings(self, api)
         self.waiting_for_reset = True # If we're waiting for all players to press finish
+        self.state = RoomState.IN_ROOM_SETTINGS # What we're doing right now
 
     def add_player(self, player: Player):
         if self.owner == None:
@@ -187,6 +199,11 @@ class Room:
         self.players.append(player)
         player.room = self
         join_room(self.name, player.sid)
+
+    def can_player_join(self) -> bool:
+        return self.state == RoomState.IN_ROOM_SETTINGS
+    def is_playing(self) -> bool:
+        return self.state == RoomState.PLAYING
     
     def get_players_waiting(self) -> int:
         return len([x for x in self.players if not x.ready])
@@ -292,6 +309,9 @@ class GameManager:
 
         if (room.requires_code and not room.code == code) and not ignore_incorrect:
             raise RoomAuthenticationErrorException()
+        
+        if not room.can_player_join():
+            raise RoomNotInWaitingRoomException()
         
         room.add_player(player)
     

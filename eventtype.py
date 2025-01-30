@@ -27,3 +27,5 @@ class EventType(Enum):
     START_GAME_RESPONSE = "start_game_response"
 
     GAME_MODE_EVENT = "game_mode_event"
+
+    FORCE_DISCONNECT = "force_disconnect"

@@ -7,6 +7,7 @@ from responsegen import ResponseGenerator
 from eventtype import EventType as E
 from waitress import serve
 from wiki import WikipediaAPI
+import banmanager
 
 dotenv.load_dotenv()
 
@@ -32,8 +33,15 @@ def favicon():
 
 @socketio.on(e(E.CLIENT_CONNECT))
 def client_connect():
+    client_ip = request.remote_addr
+    if banmanager.get_is_banned(client_ip):
+        print("Blocking connection for banned IP: " + client_ip)
+        response_generator.emit(E.FORCE_DISCONNECT, response_generator.success, request.sid)
+    else:
+        print("Allowing connection for IP:" + client_ip)
     game_manager.create_player(request.sid)
     print(request.sid + " connected")
+
 
 @socketio.on(e(E.CLIENT_DISCONNECT))
 def client_disconnect():
