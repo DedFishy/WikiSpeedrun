@@ -70,9 +70,12 @@ class ResponseGenerator:
         response["start_article"] = room.settings.get_member_or("start_article").serialize()
         response["end_article"] = room.settings.get_member_or("end_article").serialize()
         response["waiting_for_players"] = room.evaluate_waiting_for_reset()
+        
 
-        if not response["waiting_for_players"]:
+        if room.state == gamemanager.RoomState.WAITING and not response["waiting_for_players"]:
             room.state = gamemanager.RoomState.IN_ROOM_SETTINGS
+
+        response["state"] = room.state.value
         
         if player:
             response["username"] = player.name

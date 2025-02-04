@@ -92,7 +92,9 @@ class GameModeResponse(Enum):
                 player.current_page_index = len(player.page_path) - 1
                 
             if success:
+                print(room.state)
                 response_gen.eval_correct_state(room, RoomState.PLAYING)
+                print(room.state)
                 return response_gen.emit(GameModeResponse.NAV_PAGE, response_gen.nav_page, player.sid, page_id = data["page_id"])
             else:
                 return response_gen.emit_error_response(GameModeResponse.NAV_PAGE, PageNotFoundException)
@@ -100,6 +102,7 @@ class GameModeResponse(Enum):
             response_gen.eval_correct_state(room, RoomState.PLAYING)
             room.unready_all_players()
             room.state = RoomState.WAITING
+            response_gen.emit_room_update(room.name)
             return response_gen.emit(GameModeResponse.VICTORY_RACE, response_gen.change_scene, player.room.name, room=player.room, scene="victory", winner_name=player.name, page_path=player.get_title_page_path())
         elif self == GameModeResponse.NONE:
             return
@@ -109,7 +112,9 @@ class GameModeResponse(Enum):
                 other_player.page_path = [start_article.serialize()]
                 other_player.current_page_index = 0
             response_gen.eval_correct_state(room, RoomState.IN_ROOM_SETTINGS)
-            room.state = RoomState.PLAYING
+            player.room.state = RoomState.PLAYING
+            response_gen.emit_room_update(player.room.name)
+            print(player.room.state)
             return response_gen.emit(GameModeResponse.START, response_gen.start, player.room.name, scene="wikiWindow", start_title = room.settings.start_article.page_id)
         else:
             print(f"Unhandled GameModeResponse: {self.value}")
@@ -176,9 +181,9 @@ class RoomSettings:
 
 # Room class
 class RoomState(Enum):
-    IN_ROOM_SETTINGS = 0
-    PLAYING = 1
-    WAITING = 2
+    IN_ROOM_SETTINGS = "IN_ROOM_SETTINGS"
+    PLAYING = "PLAYING"
+    WAITING = "WAITING"
 
 class Room:
     def __init__(self, name: str, code: str, api: WikipediaAPI):

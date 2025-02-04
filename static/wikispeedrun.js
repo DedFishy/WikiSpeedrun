@@ -97,6 +97,7 @@ var hadConnectedToServer = false;
 var currentNotificationTimeout = null;
 var currentConnectionTimeout = null;
 var sceneBeforeLoading = null;
+var inGame = false;
 
 /* Player Definition */
 var localPlayer = {
@@ -348,8 +349,10 @@ function updateRoomSettings(data) {
         setScene("roomSettings");
         roomData.waitingForPlayers = false;
     }
+
+    console.log(data["state"]);
     
-    
+    inGame = data["state"] == "PLAYING";
 }
 
 function connectToRoom(data) {
@@ -420,6 +423,7 @@ socket.on("navpage", function(data) {
     }
 })
 function loadPageFromData(page_id) {
+    if (!inGame) return; // If page is midload and we've exited, ABORT so the player doesn't get trapped in purgatory!
     urlBar.innerText = "";
     pageRender.src = "about:blank";
     
